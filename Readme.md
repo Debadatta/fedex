@@ -124,21 +124,28 @@ rate = fedex.rate(:shipper=>shipper,
 ```
 
 Fedex provides multiple total values; `total_net_charge` is the final amount you are looking for.
+surcharges can be manipulated in `surcharges`. If you passe insured value in fedex rate, then you will get a response in surcharges for INSURED_VALUE, so you can manage the insured value surcharges.
+
+:transit_time will be the expected delivery time in rate method .
 
 ```ruby
-    $ rate.total_net_charge => "34.03"
-    # Complete response
-    $ <Fedex::Rate:0x1019ba5f8
-          @total_net_charge="34.03",
-          @total_surcharges="1.93",
-          @total_billing_weight="8.0 LB",
-          @total_taxes="0.0",
-          @rate_type="PAYOR_ACCOUNT_PACKAGE",
-          @total_base_charge="32.1",
-          @total_freight_discounts=nil,
-          @total_net_freight="32.1",
-          @rate_zone="51">
+    $<Fedex::Rate:0xd47b44c 
+      @commit={:service_type=>"FEDEX_GROUND", :transit_time=>"TWO_DAYS", :broker_to_destination_days=>"0"}, 
+      @service_type="FEDEX_GROUND", 
+      @transit_time="TWO_DAYS", 
+      @rate_type="PAYOR_RETAIL_PACKAGE", 
+      @total_billing_weight="2.0 LB", 
+      @total_freight_discounts={:currency=>"USD", :amount=>"0.0"}, 
+      @total_net_charge="9.24", 
+      @total_taxes="0.0", 
+      @total_net_freight="8.84", 
+      @total_surcharges="0.4", 
+      @surcharges={:surcharge_type=>"FUEL", :level=>"PACKAGE", :description=>"FedEx Ground Fuel", :amount=>{:currency=>"USD", :amount=>"0.4"}}, 
+      @total_base_charge="8.84", 
+      @total_net_fedex_charge=nil, 
+      @total_rebates="0.0">
 ```
+
 ### ** Get a Transit time **
 ```ruby
 ship = fedex.ship(:shipper=>shipper,
@@ -416,7 +423,7 @@ The request to fedex should include the following XML.
 <SpecialServicesRequested>
 ```
 
-So we need to set the Special Service Type EMAIL_NOTIFICATION in 
+So we need to set the :email_notification in shipping_options 
 
 ``` ruby
 emails_array = ['abc@gmail.com', 'xyz@yahoo.com']
@@ -428,6 +435,16 @@ shipping_options = {
       }
 
 ```
+
+** Sending request for fedex Confirmation of Delivery. Recipient signature required. **
+
+We need to pass special_service_types as SIGNATURE_OPTION in packages for confirmation delivery .
+
+packages << {
+          :weight => {:units => "LB", :value => 5},
+          :dimensions => {:length => 5, :width => 5, :height => 5, :units => "IN" } ,
+          :special_services_requested => {:special_service_types => 'SIGNATURE_OPTION', :signature_option_detail => { :signature_option_type => "DIRECT" }}
+      }
 # Services/Options Available
 
 ```ruby
