@@ -124,7 +124,7 @@ rate = fedex.rate(:shipper=>shipper,
 ```
 
 Fedex provides multiple total values; `total_net_charge` is the final amount you are looking for.
-surcharges can be manipulated in `surcharges`. If you passe insured value in fedex rate, then you will get a response in surcharges for INSURED_VALUE, so you can manage the insured value surcharges.
+surcharges can be manipulated in `surcharges`. If you will pass insured value in fedex rate, then you will get a response in surcharges for INSURED_VALUE, so you can manage the insured value surcharges.
 
 :transit_time will be the expected delivery time in rate method .
 
