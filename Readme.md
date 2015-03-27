@@ -436,7 +436,7 @@ shipping_options = {
 
 ```
 
-** Sending request for fedex Confirmation of Delivery. Recipient signature required. **
+### ** Sending request for fedex Confirmation of Delivery. Recipient signature required. **
 
 We need to pass special_service_types as SIGNATURE_OPTION in packages for confirmation delivery .
 
