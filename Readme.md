@@ -440,11 +440,13 @@ shipping_options = {
 
 We need to pass special_service_types as SIGNATURE_OPTION in packages for confirmation delivery .
 
+``` ruby
 packages << {
           :weight => {:units => "LB", :value => 5},
           :dimensions => {:length => 5, :width => 5, :height => 5, :units => "IN" } ,
           :special_services_requested => {:special_service_types => 'SIGNATURE_OPTION', :signature_option_detail => { :signature_option_type => "DIRECT" }}
       }
+``` 
 # Services/Options Available
 
 ```ruby
