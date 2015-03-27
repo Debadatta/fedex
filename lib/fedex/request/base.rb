@@ -110,6 +110,7 @@ module Fedex
       # Add information for shipments
       def add_requested_shipment(xml)
         xml.RequestedShipment{
+          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.utc.iso8601(2)
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"
@@ -117,8 +118,9 @@ module Fedex
           add_recipient(xml)
           add_shipping_charges_payment(xml)
           add_customs_clearance(xml) if @customs_clearance_detail
-          xml.RateRequestTypes "ACCOUNT"
+          xml.RateRequestTypes "LIST"
           add_packages(xml)
+
         }
       end
 
@@ -273,6 +275,7 @@ module Fedex
                 if package[:special_services_requested][:priority_alert_detail]
                   xml.PriorityAlertDetail package[:special_services_requested][:priority_alert_detail]
                 end
+
               }
             end
           }

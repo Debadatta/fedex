@@ -24,6 +24,9 @@ module Fedex
       # e.g. response_details[:completed_shipment_detail][:completed_package_details][:tracking_ids][:tracking_number]
       def process_request
         api_response = self.class.post api_url, :body => build_xml
+
+        puts  build_xml
+        puts "build_xml label xml====================================="
         puts api_response if @debug
         response = parse_response(api_response)
         if success?(response)
@@ -46,10 +49,10 @@ module Fedex
           add_shipper(xml)
           add_recipient(xml)
           add_shipping_charges_payment(xml)
-          add_special_services(xml) if @shipping_options[:return_reason] || @shipping_options[:cod]
+          add_special_services(xml) if @shipping_options[:return_reason] || @shipping_options[:cod] || @shipping_options[:email_notification]
           add_customs_clearance(xml) if @customs_clearance_detail
           add_custom_components(xml)
-          xml.RateRequestTypes "ACCOUNT"
+          xml.RateRequestTypes "LIST"
           add_packages(xml)
         }
       end
@@ -99,6 +102,32 @@ module Fedex
               xml.CollectionType @shipping_options[:cod][:collection_type] if @shipping_options[:cod][:collection_type]
             }
           end
+          ########
+
+          if @shipping_options[:email_notification]
+	          xml.SpecialServiceTypes "EMAIL_NOTIFICATION"
+	          xml.EMailNotificationDetail {
+		          xml.PersonalMessage ''
+		          @shipping_options[:email_notification][:recipients].each_with_index do |email, i|
+			          type =  i > 0 ? "OTHER" : "RECIPIENT"
+			          xml.Recipients {
+				          xml.EMailNotificationRecipientType  type
+				          xml.EMailAddress  email
+				          xml.NotificationEventsRequested 'ON_SHIPMENT'
+				          xml.NotificationEventsRequested 'ON_TENDER'
+				          xml.NotificationEventsRequested 'ON_EXCEPTION'
+				          xml.NotificationEventsRequested 'ON_DELIVERY'
+				          xml.Format  "HTML"
+				          xml.Localization  {
+					          xml.LanguageCode "en"
+				          }
+
+			          }
+		          end
+	          }
+
+          end
+
         }
       end
 

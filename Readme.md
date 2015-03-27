@@ -387,7 +387,43 @@ fedex_service_hash = {:origin => origin, :destination => destination, :ship_date
 service = fedex.service_availability(fedex_service_hash)
 
 puts service[:options]
+
 ```
+
+### ** Sending fedex email notification to customers**
+Sending email to single recipient 
+
+The request to fedex should include the following XML.
+
+<SpecialServicesRequested>
+  <SpecialServiceTypes>EMAIL_NOTIFICATION</SpecialServiceTypes>
+    <EMailNotificationDetail>
+      <PersonalMessage>Optional Message</PersonalMessage>
+        <Recipients>
+          <EMailNotificationRecipientType>RECIPIENT</EMailNotificationRecipientType>
+            <EMailAddress>user@domain.com</EMailAddress>
+              <NotificationEventsRequested>ON_SHIPMENT</NotificationEventsRequested>
+              <NotificationEventsRequested>ON_TENDER</NotificationEventsRequested>
+              <NotificationEventsRequested>ON_EXCEPTION</NotificationEventsRequested>
+              <NotificationEventsRequested>ON_DELIVERY</NotificationEventsRequested>
+              <Format>HTML</Format>
+              <Localization>
+                <LanguageCode>EN</LanguageCode>
+              </Localization>
+            </Recipients>
+          </EMailNotificationDetail>
+<SpecialServicesRequested>
+
+So we need to set the Special Service Type EMAIL_NOTIFICATION in 
+
+emails_array = ['abc@gmail.com', 'xyz@yahoo.com']
+
+shipping_options = {
+          :packaging_type => "YOUR_PACKAGING",
+          :drop_off_type => "REGULAR_PICKUP",
+          :email_notification => {:recipients => emails_array}
+      }
+
 
 # Services/Options Available
 

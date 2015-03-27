@@ -6,8 +6,16 @@ module Fedex
       # Sends post request to Fedex web service and parse the response, a Rate object is created if the response is successful
       def process_request
         api_response = self.class.post(api_url, :body => build_xml)
-        puts api_response if @debug
+        puts build_xml
+        puts "xml request ============================"
+
+        puts api_response #if @debug
+        puts "==================api_response================="
+
         response = parse_response(api_response)
+
+        puts response
+        puts
         if success?(response)
           rate_reply_details = response[:rate_reply][:rate_reply_details] || []
           rate_reply_details = [rate_reply_details] if rate_reply_details.is_a?(Hash)
@@ -16,6 +24,7 @@ module Fedex
             rate_details = [rate_reply[:rated_shipment_details]].flatten.first[:shipment_rate_detail]
             rate_details.merge!(service_type: rate_reply[:service_type])
             rate_details.merge!(transit_time: rate_reply[:transit_time])
+            rate_details.merge!(commit: rate_reply[:commit_details])
             Fedex::Rate.new(rate_details)
           end
         else
@@ -33,6 +42,7 @@ module Fedex
       # Add information for shipments
       def add_requested_shipment(xml)
         xml.RequestedShipment{
+          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.utc.iso8601(2)
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type if service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"
@@ -40,7 +50,7 @@ module Fedex
           add_recipient(xml)
           add_shipping_charges_payment(xml)
           add_customs_clearance(xml) if @customs_clearance_detail
-          xml.RateRequestTypes "ACCOUNT"
+          xml.RateRequestTypes "LIST"
           add_packages(xml)
         }
       end
