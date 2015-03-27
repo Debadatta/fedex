@@ -395,6 +395,7 @@ Sending email to single recipient
 
 The request to fedex should include the following XML.
 
+```XML
 <SpecialServicesRequested>
   <SpecialServiceTypes>EMAIL_NOTIFICATION</SpecialServiceTypes>
     <EMailNotificationDetail>
@@ -413,9 +414,11 @@ The request to fedex should include the following XML.
             </Recipients>
           </EMailNotificationDetail>
 <SpecialServicesRequested>
+```
 
 So we need to set the Special Service Type EMAIL_NOTIFICATION in 
 
+``` ruby
 emails_array = ['abc@gmail.com', 'xyz@yahoo.com']
 
 shipping_options = {
@@ -424,7 +427,7 @@ shipping_options = {
           :email_notification => {:recipients => emails_array}
       }
 
-
+```
 # Services/Options Available
 
 ```ruby
