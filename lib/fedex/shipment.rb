@@ -9,6 +9,7 @@ require 'fedex/request/ground_close'
 require 'fedex/request/pickup'
 require 'fedex/request/pickup_availability'
 require 'fedex/request/service_availability'
+require 'fedex/request/location_service'
 
 module Fedex
   class Shipment
@@ -110,6 +111,13 @@ module Fedex
     def service_availability(options = {})
       Request::ServiceAvailability.new(@credentials, options).process_request
     end
+
+    # param [Hash] address, A hash containing address information
+    # param [String] phone, A string containing phone
+    # param [Range] geographic coordinates, A range containing geographic coordinates
+		def location_service_availability(options = {})
+			Request::LocationService.new(@credentials, options).process_request
+		end
 
   end
 end

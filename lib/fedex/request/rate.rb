@@ -5,9 +5,17 @@ module Fedex
     class Rate < Base
       # Sends post request to Fedex web service and parse the response, a Rate object is created if the response is successful
       def process_request
-        api_response = self.class.post(api_url, :body => build_xml)        
-        response = parse_response(api_response)  
-             
+        api_response = self.class.post(api_url, :body => build_xml)
+        puts build_xml
+        puts "xml request ============================"
+
+        puts api_response #if @debug
+        puts "==================api_response================="
+
+        response = parse_response(api_response)
+
+        puts response
+        puts
         if success?(response)
           rate_reply_details = response[:rate_reply][:rate_reply_details] || []
           rate_reply_details = [rate_reply_details] if rate_reply_details.is_a?(Hash)
@@ -34,7 +42,7 @@ module Fedex
       # Add information for shipments
       def add_requested_shipment(xml)
         xml.RequestedShipment{
-          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.utc.iso8601(2)
+          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.in_time_zone(LABEL_TIMEZONE).iso8601(2)
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type if service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"

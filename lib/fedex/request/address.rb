@@ -17,6 +17,9 @@ module Fedex
         api_response = self.class.post(api_url, :body => build_xml)
         puts api_response if @debug == true
         response = parse_response(api_response)
+        puts build_xml
+        puts "api response"
+        puts response.to_yaml
         if success?(response)
           options = response[:address_validation_reply][:address_results][:proposed_address_details]
           options = options.first if options.is_a? Array

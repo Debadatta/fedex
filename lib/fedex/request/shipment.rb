@@ -23,7 +23,11 @@ module Fedex
       # The parsed Fedex response is available in #response_details
       # e.g. response_details[:completed_shipment_detail][:completed_package_details][:tracking_ids][:tracking_number]
       def process_request
-        api_response = self.class.post api_url, :body => build_xml       
+        api_response = self.class.post api_url, :body => build_xml
+
+        puts  build_xml
+        puts "build_xml label xml====================================="
+        puts api_response if @debug
         response = parse_response(api_response)
         if success?(response)
           success_response(api_response, response)
@@ -37,7 +41,7 @@ module Fedex
       # Add information for shipments
       def add_requested_shipment(xml)
         xml.RequestedShipment{
-          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.utc.iso8601(2)
+          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.in_time_zone(LABEL_TIMEZONE).iso8601(2)
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"
@@ -129,6 +133,9 @@ module Fedex
 
       # Callback used after a failed shipment response.
       def failure_response(api_response, response)
+				puts response
+				puts "======================"
+				puts api_response
         error_message = if response[:process_shipment_reply]
           [response[:process_shipment_reply][:notifications]].flatten.first[:message]
         else

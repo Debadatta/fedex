@@ -110,7 +110,7 @@ module Fedex
       # Add information for shipments
       def add_requested_shipment(xml)
         xml.RequestedShipment{
-          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.utc.iso8601(2)
+          xml.ShipTimestamp @shipping_options[:ship_timestamp] ||= Time.now.in_time_zone(LABEL_TIMEZONE).iso8601(2)
           xml.DropoffType @shipping_options[:drop_off_type] ||= "REGULAR_PICKUP"
           xml.ServiceType service_type
           xml.PackagingType @shipping_options[:packaging_type] ||= "YOUR_PACKAGING"
@@ -373,7 +373,7 @@ module Fedex
 
       # Use GROUND_HOME_DELIVERY for shipments going to a residential address within the US.
       def service_type
-        if @recipient[:residential].to_s =~ /true/i and @service_type =~ /GROUND/i and @recipient[:country_code] =~ /US/i
+        if @recipient[:residential].to_s =~ /true/i and @service_type =~ /GROUND/i and @recipient[:country_code] =~ /US/i and @packages[0][:weight][:value] <= 70
           "GROUND_HOME_DELIVERY"
         else
           @service_type
